@@ -2,8 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/kube-practice" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/nest-server" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/next-app" vcs="Git" />
   </component>
 </project>
