@@ -43,17 +43,7 @@ kubectl logs my-pod
 kubectl logs -f my-pod
 ```
 
-### 4. Pod 내부 접속
-
-```bash
-kubectl exec -it my-pod -- /bin/sh
-
-# 내부에서 테스트
-wget -qO- localhost
-exit
-```
-
-### 5. Port Forward (외부에서 접근)
+### 4. Port Forward (외부에서 접근)
 
 Service 없이 로컬에서 Pod에 직접 접근하는 방법입니다.
 
@@ -71,7 +61,7 @@ http://localhost:8080
 
 종료: `Ctrl + C`
 
-### 6. Pod 삭제 및 재생성 테스트
+### 5. Pod 삭제 및 재생성 테스트
 
 ```bash
 # Pod 삭제
