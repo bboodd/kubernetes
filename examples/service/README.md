@@ -47,17 +47,8 @@ kubectl get services
 클러스터 **내부**에서만 접근 가능:
 ```bash
 # 테스트용 Pod에서 접근
-kubectl run test-pod --image=busybox --rm -it -- wget -qO- my-service:80
+kubectl run test-pod --image=curlimages/curl --rm -it --restart=Never -- curl -s my-service:80
 
-# 명령어 설명:
-# kubectl run test-pod    → test-pod 이름으로 Pod 생성
-# --image=busybox         → busybox 이미지 사용 (경량 리눅스 유틸리티)
-# --rm                    → 명령 완료 후 Pod 자동 삭제
-# -it                     → 인터랙티브 터미널 모드
-# --                      → kubectl 옵션과 컨테이너 명령어 구분
-# wget -qO- my-service:80 → my-service:80으로 HTTP 요청
-#   -q                    → quiet 모드 (진행 상황 숨김)
-#   -O-                   → 결과를 화면에 출력
 ```
 
 ---
