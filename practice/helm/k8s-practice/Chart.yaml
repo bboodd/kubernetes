@@ -1,0 +1,16 @@
+apiVersion: v2
+name: k8s-practice
+description: Kubernetes practice stack with Spring Boot, Next.js, PostgreSQL, ELK, and Prometheus/Grafana
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - kubernetes
+  - spring-boot
+  - nextjs
+  - postgresql
+  - elk
+  - prometheus
+  - grafana
+maintainers:
+  - name: practice

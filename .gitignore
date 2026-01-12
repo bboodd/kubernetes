@@ -1,2 +1,8 @@
 **/node_modules/
 .idea
+
+# Kubernetes secrets (DO NOT COMMIT)
+#**/secrets.yaml
+#**/*-secret.yaml
+#**/*.secret.yaml
+#**/values-secret.yaml

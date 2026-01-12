@@ -15,9 +15,3 @@ spec:
       labels:
         app: my-app
 
-    spec:
-      containers:
-        - name: nginx-container
-          image: nginx:latest
-          ports:
-            - containerPort: 80

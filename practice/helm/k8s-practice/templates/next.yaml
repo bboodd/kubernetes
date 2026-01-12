@@ -1,0 +1,124 @@
+{{- if .Values.next.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  labels:
+    {{- include "k8s-practice.labels" . | nindent 4 }}
+data:
+  nginx.conf: |
+    events {
+      worker_connections 1024;
+    }
+    http {
+      upstream nextjs {
+        server 127.0.0.1:3000 max_fails=3 fail_timeout=10s;
+      }
+      server {
+        listen 80;
+        server_name localhost;
+
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
+
+        location / {
+          proxy_pass http://127.0.0.1:3000;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection 'upgrade';
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_cache_bypass $http_upgrade;
+        }
+
+        location /health {
+          proxy_pass http://127.0.0.1:3000/api/health;
+          proxy_connect_timeout 2s;
+          proxy_read_timeout 5s;
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: next-app
+  labels:
+    {{- include "k8s-practice.labels" . | nindent 4 }}
+    app: next-app
+spec:
+  replicas: {{ .Values.next.replicaCount }}
+  selector:
+    matchLabels:
+      app: next-app
+  template:
+    metadata:
+      labels:
+        app: next-app
+    spec:
+      containers:
+        - name: nginx
+          image: "{{ .Values.next.nginx.image.repository }}:{{ .Values.next.nginx.image.tag }}"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 15
+        - name: next-app
+          image: "{{ .Values.next.image.repository }}:{{ .Values.next.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: HOSTNAME
+              value: "0.0.0.0"
+            - name: SPRING_API_URL
+              value: "http://spring-app-service:8080/api"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 15
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: next-app-service
+  labels:
+    {{- include "k8s-practice.labels" . | nindent 4 }}
+    app: next-app
+spec:
+  type: ClusterIP
+  selector:
+    app: next-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+{{- end }}

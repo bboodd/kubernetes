@@ -1,0 +1,136 @@
+# Global settings
+global:
+  imagePullPolicy: Never  # For local development
+
+# Secrets (override in values-secret.yaml)
+secrets:
+  postgres:
+    database: myapp
+    username: myuser
+    password: mypassword
+  grafana:
+    adminUser: admin
+    adminPassword: admin
+
+# PostgreSQL
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "15-alpine"
+  storage:
+    size: 1Gi
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+
+# Spring Boot Application
+spring:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: spring-app
+    tag: latest
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Next.js Application
+next:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: next-app
+    tag: latest
+  nginx:
+    image:
+      repository: nginx
+      tag: alpine
+
+# Ingress
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    app: localhost
+    kibana: kibana.localhost
+    grafana: grafana.localhost
+    prometheus: prometheus.localhost
+
+# ELK Stack
+elk:
+  enabled: true
+  elasticsearch:
+    image:
+      repository: docker.elastic.co/elasticsearch/elasticsearch
+      tag: "8.11.3"
+    storage:
+      size: 5Gi
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "2Gi"
+        cpu: "1000m"
+    javaOpts: "-Xms512m -Xmx512m"
+  kibana:
+    image:
+      repository: docker.elastic.co/kibana/kibana
+      tag: "8.11.3"
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+  filebeat:
+    image:
+      repository: docker.elastic.co/beats/filebeat
+      tag: "8.11.3"
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+
+# Monitoring (Prometheus & Grafana)
+monitoring:
+  enabled: true
+  prometheus:
+    image:
+      repository: prom/prometheus
+      tag: "v2.48.0"
+    storage:
+      size: 2Gi
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "200m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+  grafana:
+    image:
+      repository: grafana/grafana
+      tag: "10.2.3"
+    storage:
+      size: 1Gi
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "250m"
